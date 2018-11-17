@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NumberToWord
 {
@@ -8,6 +9,15 @@ namespace NumberToWord
         private string MainNumber;
         private char[] NumberArray;
         private string MainResult="";
+        private char[] Zeroes={'0','0','0'};
+        private char[] Thousands={'0','0','0'};
+        private char[] Millions={'0','0','0'};
+        private char[] Billions={'0','0','0'};
+        private char[] ZeroArray={'0','0','0'};
+
+
+
+
         private Dictionary<char, string> OnesPlaceDictionary = new Dictionary<char, string>()
         {
             {'0', ""},
@@ -32,20 +42,20 @@ namespace NumberToWord
             {'6', "sixteen"},
             {'7', "seventen"},
             {'8', "eighteen"},
-            {'9', "nineteen"};
+            {'9', "nineteen"}
         };
          private Dictionary<char, string> TensDictionary = new Dictionary<char, string>()
         {
             {'0', ""},
             {'1', ""},
-            {'2', "twenty"},
-            {'3', "thirty"},
-            {'4', "fourty"},
-            {'5', "fifty"},
-            {'6', "sixty"},
-            {'7', "seventy"},
-            {'8', "eighty"},
-            {'9', "ninety"};
+            {'2', "twenty "},
+            {'3', "thirty "},
+            {'4', "fourty "},
+            {'5', "fifty "},
+            {'6', "sixty "},
+            {'7', "seventy "},
+            {'8', "eighty "},
+            {'9', "ninety "}
         };
         public NumberToWord(string userInput)
         {
@@ -54,32 +64,61 @@ namespace NumberToWord
 
         public void FixMainNumber()
         {
-            if (MainNumber.Count%3=1)
-            {
-                MainNumber="00"+MainNumber;
-            }
-            else if (MainNumber.Count%3=2)
-            {
-                MainNumber="0"+MainNumber;
-            }
+          int zeroesNeeded= 12-MainNumber.Length;
+          for (int i= 0;i<zeroesNeeded;i++)
+          {
+            MainNumber="0"+MainNumber;
+          }
         }
-        public void ChangeToString()
+        public void CreateArrays()
         {
-            string resultPart="";
-            char[] NumberArray= MainNumber.ToCharArray();
-            resultPart+=OnesPlaceDictionary[NumberArray[0]]+"hundred";
-            resultPart+=TensDictionary[NumberArray[1]];
+          NumberArray= MainNumber.ToCharArray();
+          for (int i=0;i<3;i++)
+          {
+            Billions[i]= NumberArray[i];
+            Millions[i]= NumberArray[i+3];
+            Thousands[i]= NumberArray[i+6];
+            Zeroes[i]= NumberArray[i+9];
+          }
+
+          if (!Billions.SequenceEqual(ZeroArray))
+          {
+            ChangeToString(Billions);
+            MainResult+=" Billion ";
+          }
+          if (!Millions.SequenceEqual(ZeroArray))
+          {
+            ChangeToString(Millions);
+            MainResult+=" Million ";
+          }
+          if (!Thousands.SequenceEqual(ZeroArray))
+          {
+            ChangeToString(Thousands);
+            MainResult+=" Thousand ";
+          }
+          if (!Zeroes.SequenceEqual(ZeroArray))
+          {
+            ChangeToString(Zeroes);
+          }
+
+        }
+        public void ChangeToString(char[] threeDigits)
+        {
+            if (threeDigits[0]!='0')
+            {
+              MainResult+=OnesPlaceDictionary[threeDigits[0]]+" hundred ";
+            }
             if (NumberArray[1]=='1')
             {
-                resultPart+=TeensDictionary[NumberArray[2]];
+              MainResult+=TeensDictionary[threeDigits[2]];
             }
             else
             {
-                resultPart+=OnesPlaceDictionary[NumberArray[2]];
+              MainResult+=TensDictionary[threeDigits[1]];
+              MainResult+=OnesPlaceDictionary[threeDigits[2]];
             }
-            MainResult= resultPart;
         }
-        public GetResult()
+        public  string GetResult()
         {
             return MainResult;
         }
@@ -92,7 +131,7 @@ namespace NumberToWord
             string userInput= Console.ReadLine();
             NumberToWord numberToWord=new NumberToWord(userInput);
             numberToWord.FixMainNumber();
-            numberToWord.ChangeToString();
+            numberToWord.CreateArrays();
             Console.WriteLine(numberToWord.GetResult());
         }
     }
